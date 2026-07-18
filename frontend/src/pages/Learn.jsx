@@ -155,7 +155,7 @@ export default function Learn() {
           <span className="material-symbols-outlined text-primary text-3xl" style={{fontVariationSettings: "'FILL' 1"}}>memory</span>
           <h2 className="font-headline-lg text-headline-lg text-primary">How the Risk Score Works</h2>
         </div>
-        <p className="font-body-md text-body-md text-on-surface-variant mb-xl max-w-3xl">
+        <p className="font-body-md text-body-md text-on-surface-variant mb-xl max-w-[768px]">
           Our AI chatbot isn't random; it's heavily grounded in WHO, ICMR, and CDC rules. We pass your responses through a deterministic risk engine before generating clinical advice.
         </p>
         
@@ -229,7 +229,7 @@ export default function Learn() {
             <span className="material-symbols-outlined text-error text-3xl" style={{fontVariationSettings: "'FILL' 1"}}>emergency</span>
             <h2 className="font-headline-lg text-headline-lg text-error">Danger Signs – See a Doctor Immediately</h2>
           </div>
-          <p className="font-body-md text-body-md text-on-surface mb-md max-w-4xl">
+          <p className="font-body-md text-body-md text-on-surface mb-md max-w-[896px]">
             If you or the patient experience any of the following symptoms, stop self-medicating and seek urgent medical evaluation.
           </p>
           <ul className="grid grid-cols-1 md:grid-cols-2 gap-sm mb-lg">

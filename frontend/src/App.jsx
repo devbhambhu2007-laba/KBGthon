@@ -4,6 +4,8 @@ import Landing from './pages/Landing'
 import Assessment from './pages/Assessment'
 import Results from './pages/Results'
 import Learn from './pages/Learn'
+import Quiz from './pages/Quiz'
+import Emergency from './pages/Emergency'
 
 function App() {
   return (
@@ -14,6 +16,8 @@ function App() {
           <Route path="/assessment" element={<Assessment />} />
           <Route path="/results" element={<Results />} />
           <Route path="/learn" element={<Learn />} />
+          <Route path="/quiz" element={<Quiz />} />
+          <Route path="/emergency" element={<Emergency />} />
         </Routes>
       </Layout>
     </BrowserRouter>

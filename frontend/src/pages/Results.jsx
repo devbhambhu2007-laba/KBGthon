@@ -133,14 +133,14 @@ export default function Results() {
       <div className="flex flex-col sm:flex-row justify-end items-center gap-md mt-lg border-t border-outline-variant pt-lg">
         <button 
           onClick={() => navigate('/assessment')}
-          className="w-full sm:w-auto px-lg py-sm rounded border border-secondary text-secondary font-label-md text-label-md hover:bg-surface-container-low transition-colors flex items-center justify-center gap-xs cursor-pointer active:scale-95"
+          className="w-full sm:w-auto px-lg py-sm rounded border border-primary text-primary font-label-md text-label-md hover:bg-primary/10 transition-colors flex items-center justify-center gap-xs cursor-pointer active:scale-95"
         >
           <span className="material-symbols-outlined" style={{fontVariationSettings: "'FILL' 0"}}>refresh</span>
           Restart Assessment
         </button>
         <button 
           onClick={() => navigate('/learn')}
-          className="w-full sm:w-auto px-lg py-sm rounded bg-primary-container text-on-primary font-label-md text-label-md hover:bg-primary transition-colors flex items-center justify-center gap-xs cursor-pointer active:scale-95"
+          className="w-full sm:w-auto px-lg py-sm rounded bg-primary text-on-primary font-label-md text-label-md hover:bg-primary/90 shadow-sm transition-colors flex items-center justify-center gap-xs cursor-pointer active:scale-95"
         >
           <span className="material-symbols-outlined" style={{fontVariationSettings: "'FILL' 0"}}>school</span>
           Learn About AMR
