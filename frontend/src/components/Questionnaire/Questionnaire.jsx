@@ -13,16 +13,18 @@ const ANTIBIOTICS = [
 
 export default function Questionnaire({ onSubmit, loading }) {
   const [step, setStep] = useState(1);
+  const totalSteps = 6;
   const [data, setData] = useState({
     age: '',
     symptoms: [],
-    doctor_consulted: false,
+    doctor_consulted: null,       // null = unanswered, true/false = answered
     antibiotic_prescribed: '',
+    self_medicated: null,
     days_prescribed: '',
     days_completed: '',
-    doses_skipped: false,
-    self_medicated: false,
-    prior_use_6mo: false
+    doses_skipped: null,
+    prior_use_6mo: null,
+    shared_antibiotics: null      // new question
   });
 
   const update = (fields) => setData(prev => ({ ...prev, ...fields }));
@@ -35,7 +37,7 @@ export default function Questionnaire({ onSubmit, loading }) {
     }
   };
 
-  const handleNext = () => setStep(s => Math.min(s + 1, 4));
+  const handleNext = () => setStep(s => Math.min(s + 1, totalSteps));
   const handleBack = () => setStep(s => Math.max(s - 1, 1));
 
   const handleSubmit = (e) => {
@@ -43,38 +45,90 @@ export default function Questionnaire({ onSubmit, loading }) {
     onSubmit({
       ...data,
       age: parseInt(data.age, 10),
+      doctor_consulted: data.doctor_consulted === true,
+      self_medicated: data.self_medicated === true,
+      doses_skipped: data.doses_skipped === true,
+      prior_use_6mo: data.prior_use_6mo === true,
+      shared_antibiotics: data.shared_antibiotics === true,
       days_prescribed: data.days_prescribed ? parseInt(data.days_prescribed, 10) : null,
       days_completed: data.days_completed ? parseInt(data.days_completed, 10) : null,
     });
   };
 
   const isValidStep1 = data.age > 0 && data.symptoms.length > 0;
-  const isValidStep2 = !data.doctor_consulted || (data.doctor_consulted && data.antibiotic_prescribed !== '');
-  const isValidStep3 = true; // days can be optional or default
+  const isValidStep2 = data.doctor_consulted !== null;
+  const isValidStep3 = data.self_medicated !== null;
+  const isValidStep4 = true; // days are optional
+  const isValidStep5 = data.doses_skipped !== null;
   
-  const stepLabels = ["Personal Info", "Medical Consultation", "Treatment Compliance", "History"];
+  const stepLabels = [
+    "Your Symptoms", 
+    "Doctor Consultation", 
+    "Self-Medication", 
+    "Course Completion", 
+    "Dose Adherence",
+    "History"
+  ];
+
+  const YesNoCard = ({ label, description, value, onChange, yesColor = "teal", noColor = "slate" }) => (
+    <div className="space-y-3">
+      <p className="font-medium text-lg text-white mb-1">{label}</p>
+      {description && <p className="text-sm text-slate-400 mb-3">{description}</p>}
+      <div className="grid grid-cols-2 gap-4">
+        <button
+          type="button"
+          onClick={() => onChange(true)}
+          className={`p-4 rounded-xl border-2 text-center font-semibold transition-all duration-200 ${
+            value === true 
+              ? `border-${yesColor}-400 bg-${yesColor}-500/20 text-${yesColor}-300 shadow-[0_0_15px_rgba(45,212,191,0.2)]` 
+              : 'border-slate-600 bg-slate-800/50 text-slate-400 hover:border-slate-500'
+          }`}
+        >
+          ✓ Yes
+        </button>
+        <button
+          type="button"
+          onClick={() => onChange(false)}
+          className={`p-4 rounded-xl border-2 text-center font-semibold transition-all duration-200 ${
+            value === false 
+              ? 'border-emerald-400 bg-emerald-500/20 text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.2)]' 
+              : 'border-slate-600 bg-slate-800/50 text-slate-400 hover:border-slate-500'
+          }`}
+        >
+          ✗ No
+        </button>
+      </div>
+    </div>
+  );
 
   return (
     <div className="glass-card max-w-2xl mx-auto p-6 md:p-8 animate-fade-in relative overflow-hidden">
+      {/* Question counter */}
+      <div className="mb-2 text-center">
+        <span className="text-xs uppercase tracking-widest text-teal-400 font-semibold">Question {step} of {totalSteps}</span>
+      </div>
+
       {/* Progress */}
       <div className="mb-8">
         <div className="flex justify-between text-xs font-medium text-slate-400 mb-2">
-          <span>Step {step} of 4: {stepLabels[step - 1]}</span>
-          <span>{Math.round((step / 4) * 100)}%</span>
+          <span>{stepLabels[step - 1]}</span>
+          <span>{Math.round((step / totalSteps) * 100)}%</span>
         </div>
         <div className="progress-bar">
-          <div className="progress-bar-fill" style={{ width: `${(step / 4) * 100}%` }}></div>
+          <div className="progress-bar-fill" style={{ width: `${(step / totalSteps) * 100}%` }}></div>
         </div>
       </div>
 
-      <form onSubmit={(e) => { e.preventDefault(); if (step === 4) handleSubmit(e); else handleNext(); }} className="min-h-[300px] flex flex-col justify-between relative">
+      <form onSubmit={(e) => { e.preventDefault(); if (step === totalSteps) handleSubmit(e); else handleNext(); }} className="min-h-[320px] flex flex-col justify-between relative">
         <div className="flex-grow">
+
+          {/* Q1: Age + Symptoms */}
           {step === 1 && (
             <div className="animate-slide-right">
-              <h2 className="text-2xl font-semibold mb-6">Tell us about your current situation</h2>
+              <h2 className="text-2xl font-semibold mb-6">What symptoms are you experiencing?</h2>
               
               <div className="mb-6">
-                <label className="block text-sm font-medium text-slate-300 mb-2">Age</label>
+                <label className="block text-sm font-medium text-slate-300 mb-2">Your Age</label>
                 <input 
                   type="number" 
                   min="1" max="120"
@@ -104,24 +158,20 @@ export default function Questionnaire({ onSubmit, loading }) {
             </div>
           )}
 
+          {/* Q2: Doctor Consulted? */}
           {step === 2 && (
             <div className="animate-slide-right">
-              <h2 className="text-2xl font-semibold mb-6">Medical Consultation</h2>
+              <h2 className="text-2xl font-semibold mb-6">Did you consult a doctor?</h2>
               
-              <div className="mb-6">
-                <label className="flex items-center gap-3 p-4 glass-card-light cursor-pointer rounded-lg hover:border-teal-400/50 transition-colors">
-                  <input 
-                    type="checkbox"
-                    checked={data.doctor_consulted}
-                    onChange={e => update({ doctor_consulted: e.target.checked, antibiotic_prescribed: '' })}
-                    className="w-5 h-5 accent-teal-500 rounded border-slate-600"
-                  />
-                  <span className="font-medium">I have consulted a doctor for this illness</span>
-                </label>
-              </div>
+              <YesNoCard
+                label="Have you consulted a doctor before taking any antibiotic for this illness?"
+                description="Using antibiotics without medical guidance is a major driver of antimicrobial resistance."
+                value={data.doctor_consulted}
+                onChange={(v) => update({ doctor_consulted: v, antibiotic_prescribed: '' })}
+              />
 
-              {data.doctor_consulted && (
-                <div className="animate-slide-up">
+              {data.doctor_consulted === true && (
+                <div className="animate-slide-up mt-6">
                   <label className="block text-sm font-medium text-slate-300 mb-2">Which antibiotic was prescribed?</label>
                   <select 
                     value={data.antibiotic_prescribed}
@@ -136,23 +186,39 @@ export default function Questionnaire({ onSubmit, loading }) {
             </div>
           )}
 
+          {/* Q3: Self-Medication / Leftover use */}
           {step === 3 && (
             <div className="animate-slide-right">
-              <h2 className="text-2xl font-semibold mb-6">Treatment Compliance</h2>
+              <h2 className="text-2xl font-semibold mb-6">Self-Medication Check</h2>
+              
+              <YesNoCard
+                label="Did you take antibiotics without a prescription, or use leftover antibiotics from an older illness?"
+                description="Self-medication with antibiotics—especially leftover ones—often means the wrong drug, wrong dose, or expired medicine, all of which accelerate resistance."
+                value={data.self_medicated}
+                onChange={(v) => update({ self_medicated: v })}
+              />
+            </div>
+          )}
+
+          {/* Q4: Course Completion */}
+          {step === 4 && (
+            <div className="animate-slide-right">
+              <h2 className="text-2xl font-semibold mb-6">Did you complete the full course?</h2>
+              <p className="text-sm text-slate-400 mb-6">Stopping antibiotics early—even if you feel better—allows partially resistant bacteria to survive and multiply.</p>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Days Prescribed</label>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Days Prescribed by Doctor</label>
                   <input 
                     type="number" min="0"
                     value={data.days_prescribed}
                     onChange={e => update({ days_prescribed: e.target.value })}
                     className="w-full bg-slate-800/50 border border-slate-600 rounded-lg p-3 text-white focus:outline-none focus:border-teal-400"
-                    placeholder="e.g. 5"
+                    placeholder="e.g. 7"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Days Completed</label>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Days You Actually Completed</label>
                   <input 
                     type="number" min="0"
                     value={data.days_completed}
@@ -162,51 +228,45 @@ export default function Questionnaire({ onSubmit, loading }) {
                   />
                 </div>
               </div>
-
-              <div>
-                <label className="flex items-center gap-3 p-4 glass-card-light cursor-pointer rounded-lg hover:border-amber-400/50 transition-colors">
-                  <input 
-                    type="checkbox"
-                    checked={data.doses_skipped}
-                    onChange={e => update({ doses_skipped: e.target.checked })}
-                    className="w-5 h-5 accent-amber-500 rounded border-slate-600"
-                  />
-                  <span className="font-medium">I have skipped one or more doses</span>
-                </label>
-              </div>
+              <p className="text-xs text-slate-500">Leave blank if you don't remember or were not prescribed a specific course.</p>
             </div>
           )}
 
-          {step === 4 && (
+          {/* Q5: Doses Skipped */}
+          {step === 5 && (
             <div className="animate-slide-right">
-              <h2 className="text-2xl font-semibold mb-6">History & Practices</h2>
+              <h2 className="text-2xl font-semibold mb-6">Did you skip any doses?</h2>
               
-              <div className="space-y-4">
-                <label className="flex items-start gap-3 p-4 glass-card-light cursor-pointer rounded-lg hover:border-coral-400/50 transition-colors">
-                  <input 
-                    type="checkbox"
-                    checked={data.self_medicated}
-                    onChange={e => update({ self_medicated: e.target.checked })}
-                    className="w-5 h-5 mt-0.5 accent-coral-500 rounded border-slate-600"
-                  />
-                  <div>
-                    <span className="block font-medium mb-1">Self-Medication</span>
-                    <span className="text-sm text-slate-400">Have you used antibiotics without a prescription or used leftover medicine for this illness?</span>
-                  </div>
-                </label>
+              <YesNoCard
+                label="Have you missed or skipped one or more doses during your antibiotic course?"
+                description="Skipping doses creates sub-therapeutic drug levels in your body, giving bacteria the perfect window to develop resistance mechanisms."
+                value={data.doses_skipped}
+                onChange={(v) => update({ doses_skipped: v })}
+              />
+            </div>
+          )}
 
-                <label className="flex items-start gap-3 p-4 glass-card-light cursor-pointer rounded-lg hover:border-amber-400/50 transition-colors">
-                  <input 
-                    type="checkbox"
-                    checked={data.prior_use_6mo}
-                    onChange={e => update({ prior_use_6mo: e.target.checked })}
-                    className="w-5 h-5 mt-0.5 accent-amber-500 rounded border-slate-600"
+          {/* Q6: History — Prior use + Sharing */}
+          {step === 6 && (
+            <div className="animate-slide-right">
+              <h2 className="text-2xl font-semibold mb-6">Antibiotic History</h2>
+              
+              <div className="space-y-6">
+                <YesNoCard
+                  label="Have you taken antibiotics in the last 6 months (for a different illness)?"
+                  description="Frequent antibiotic use within short periods increases selective pressure on bacteria."
+                  value={data.prior_use_6mo}
+                  onChange={(v) => update({ prior_use_6mo: v })}
+                />
+
+                <div className="border-t border-slate-700/50 pt-6">
+                  <YesNoCard
+                    label="Have you ever shared your antibiotics with a family member or friend?"
+                    description="Sharing antibiotics means the wrong drug for the wrong person—a dangerous practice that fuels AMR."
+                    value={data.shared_antibiotics}
+                    onChange={(v) => update({ shared_antibiotics: v })}
                   />
-                  <div>
-                    <span className="block font-medium mb-1">Prior Use</span>
-                    <span className="text-sm text-slate-400">Have you taken any antibiotics in the last 6 months?</span>
-                  </div>
-                </label>
+                </div>
               </div>
             </div>
           )}
@@ -220,14 +280,18 @@ export default function Questionnaire({ onSubmit, loading }) {
             </button>
           ) : <div></div>}
           
-          {step < 4 ? (
+          {step < totalSteps ? (
             <button 
               type="button" 
               onClick={handleNext} 
-              disabled={(step === 1 && !isValidStep1) || (step === 2 && !isValidStep2)}
+              disabled={
+                (step === 1 && !isValidStep1) || 
+                (step === 2 && !isValidStep2) ||
+                (step === 3 && !isValidStep3)
+              }
               className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Next Step
+              Next Question →
             </button>
           ) : (
             <button 
@@ -243,7 +307,7 @@ export default function Questionnaire({ onSubmit, loading }) {
                   </svg>
                   Analyzing...
                 </span>
-              ) : "Calculate Risk"}
+              ) : "🔬 Calculate My Risk"}
             </button>
           )}
         </div>

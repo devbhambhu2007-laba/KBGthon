@@ -32,11 +32,12 @@ export default function RiskResult({ data }) {
             <h4 className="font-semibold text-white mb-2">Deterministic Scoring Engine Math:</h4>
             <p className="mb-2">
               Your score is calculated based on WHO/CDC risk weightings.
-              The maximum possible raw risk sum is <strong>15 points</strong>.
+              Your score is based on 7 risk rules derived from WHO/CDC/ICMR guidelines.
+              The maximum possible raw risk sum is <strong>17 points</strong>.
             </p>
             <div className="bg-slate-900/60 p-2.5 rounded border border-slate-800 font-mono text-xs text-teal-300 mb-3">
-              Triggered Raw Sum = {rawSum} points <br />
-              Formula: ({rawSum} / 15) * 10 = {data.score}
+              Triggered Raw Sum = {rawSum} / 17 max points <br />
+              Formula: ({rawSum} / 17) × 10 = {data.score}
             </div>
             <p className="text-xs text-slate-400">
               *Note: Having symptoms does not directly add points. Symptoms are only checked to determine if you used antibiotics for a likely viral infection.

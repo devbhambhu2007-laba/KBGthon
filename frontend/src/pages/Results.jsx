@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import RiskResult from '../components/RiskResult/RiskResult';
 import Explanation from '../components/Explanation/Explanation';
 import Disclaimer from '../components/Disclaimer/Disclaimer';
-import { getExplanation } from '../utils/api';
+import { getGuideline, getExplanation } from '../utils/api';
 
 export default function Results() {
   const location = useLocation();
@@ -11,7 +11,7 @@ export default function Results() {
   const state = location.state;
 
   const [assessData] = useState(state?.assessData || null);
-  const [explainData, setExplainData] = useState(state?.explainData || null);
+  const [explainData, setExplainData] = useState(null);
   const [loadingExplain, setLoadingExplain] = useState(false);
 
   useEffect(() => {
@@ -20,19 +20,33 @@ export default function Results() {
       return;
     }
     
-    // If we have assessData but no explainData, it means explain wasn't fetched yet
     if (!explainData && !loadingExplain) {
       const fetchExplain = async () => {
         setLoadingExplain(true);
         try {
-          // Build snippets map from reasons that have snippets attached
+          // First, fetch guideline snippets for each triggered reason
           const snippetsMap = {};
-          assessData.reasons.forEach(r => {
-            if (r.snippet && r.guideline_ref) {
-              snippetsMap[r.guideline_ref] = r.snippet;
-            }
-          });
+          if (assessData.reasons && assessData.reasons.length > 0) {
+            const guidelinePromises = assessData.reasons
+              .filter(r => r.guideline_ref)
+              .map(async (r) => {
+                try {
+                  const g = await getGuideline(r.guideline_ref);
+                  return { ref: r.guideline_ref, snippet: g.snippet };
+                } catch {
+                  return { ref: r.guideline_ref, snippet: '' };
+                }
+              });
+            
+            const guidelines = await Promise.all(guidelinePromises);
+            guidelines.forEach(g => {
+              if (g.snippet) {
+                snippetsMap[g.ref] = g.snippet;
+              }
+            });
+          }
 
+          // Now call /explain with the proper snippets
           const payload = {
             score: assessData.score,
             category: assessData.category,
@@ -60,16 +74,16 @@ export default function Results() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 w-full py-10 flex-grow animate-fade-in">
-      <div className="mb-6">
-        <Disclaimer variant="inline" />
-      </div>
+      {/* Dynamic disclaimer at top — tied to risk level */}
+      <Disclaimer riskCategory={assessData.category} />
 
       <RiskResult data={assessData} />
       
       <Explanation explanation={explainData} loading={!explainData && loadingExplain} />
 
+      {/* Dynamic disclaimer at bottom — tied to risk level */}
       <div className="mt-8">
-        <Disclaimer variant="inline" />
+        <Disclaimer riskCategory={assessData.category} />
       </div>
 
       <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">

@@ -11,6 +11,7 @@ class QuestionnaireInput(BaseModel):
     doses_skipped: bool
     self_medicated: bool
     prior_use_6mo: bool
+    shared_antibiotics: bool = False
 
 class RiskReason(BaseModel):
     rule_id: str

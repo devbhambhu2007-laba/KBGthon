@@ -7,6 +7,8 @@ RULES_PATH = Path(__file__).parent / 'config' / 'rules.json'
 with open(RULES_PATH, 'r', encoding='utf-8') as f:
     RULES = json.load(f)
 
+MAX_RAW_SUM = sum(r['weight'] for r in RULES)  # 17
+
 def evaluate(input_data: QuestionnaireInput) -> RiskResult:
     triggered_reasons = []
     raw_sum = 0
@@ -30,6 +32,8 @@ def evaluate(input_data: QuestionnaireInput) -> RiskResult:
             triggered = input_data.doses_skipped
         elif rule['id'] == 'RULE-06':
             triggered = input_data.prior_use_6mo
+        elif rule['id'] == 'RULE-07':
+            triggered = input_data.shared_antibiotics
             
         if triggered:
             raw_sum += rule['weight']
@@ -40,7 +44,7 @@ def evaluate(input_data: QuestionnaireInput) -> RiskResult:
                 guideline_ref=rule['guideline_ref']
             ))
             
-    score = round((raw_sum / 15) * 10, 1)
+    score = round((raw_sum / MAX_RAW_SUM) * 10, 1)
     
     if score <= 3:
         category = "Low"
