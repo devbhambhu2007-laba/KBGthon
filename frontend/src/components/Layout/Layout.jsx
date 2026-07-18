@@ -1,16 +1,33 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 
 export default function Layout({ children }) {
+  const [isDark, setIsDark] = useState(() => {
+    return localStorage.getItem('theme') === 'dark';
+  });
+
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [isDark]);
+
   return (
     <>
       {/* Floating Pill Navbar Wrapper */}
       <div className="fixed top-4 left-0 right-0 z-50 flex justify-center px-margin-mobile pointer-events-none">
         <nav className="pointer-events-auto bg-[#1a1a1a] text-white rounded-full flex items-center justify-between p-2 shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-white/10 w-full max-w-[800px]">
           
-          {/* Logo */}
-          <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shrink-0 cursor-pointer group">
-            <span className="material-symbols-outlined text-[#1a1a1a] text-xl group-hover:rotate-12 transition-transform" style={{fontVariationSettings: "'FILL' 0"}}>public</span>
+          {/* Logo / Theme Toggle */}
+          <div 
+            onClick={() => setIsDark(!isDark)}
+            className="w-10 h-10 rounded-full bg-white flex items-center justify-center shrink-0 cursor-pointer group"
+          >
+            <span className="material-symbols-outlined text-[#1a1a1a] text-xl group-hover:rotate-12 transition-transform select-none" title="Toggle Theme" style={{fontVariationSettings: "'FILL' 0"}}>public</span>
           </div>
           
           {/* Links */}
