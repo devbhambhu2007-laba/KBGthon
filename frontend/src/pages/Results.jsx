@@ -102,7 +102,7 @@ export default function Results() {
             <div className="bg-error-container border border-error rounded-xl p-2xl flex flex-col items-center justify-center text-center gap-md shadow-sm">
               <span className="material-symbols-outlined text-error" style={{fontVariationSettings: "'FILL' 1", fontSize: '64px'}}>emergency</span>
               <h2 className="text-display-lg font-display-lg text-on-error-container">Urgent Medical Attention Required</h2>
-              <p className="text-headline-sm font-headline-sm text-on-error-container max-w-2xl mt-sm">
+              <p className="text-headline-sm font-headline-sm text-on-error-container max-w-[672px] mt-sm">
                 You reported symptoms such as high persistent fever, confusion, breathlessness, or severe abdominal pain. This may be serious.
               </p>
               <p className="text-body-lg font-body-lg text-error font-bold mt-md bg-error-container border border-error px-md py-sm rounded">
