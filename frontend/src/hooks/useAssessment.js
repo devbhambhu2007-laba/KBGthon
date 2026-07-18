@@ -23,12 +23,14 @@ export function useAssessment() {
       age: merged.age,
       symptoms: merged.symptoms.map(s => s.toLowerCase()),
       doctor_consulted: merged.doctor_consulted,
-      antibiotic_prescribed: merged.antibiotic_name || null,
+      suggestion_source: merged.suggestion_source || null,
+      antibiotic_prescribed: merged.antibiotic_prescribed || null,
+      dosage: merged.dosage || null,
       days_prescribed: merged.days_prescribed || null,
       days_completed: merged.days_completed || null,
       doses_skipped: merged.doses_skipped,
-      self_medicated: merged.self_medicated,
-      prior_use_6mo: merged.prior_use_6mo
+      prior_use_6mo: merged.prior_use_6mo,
+      shared_antibiotics: merged.shared_antibiotics
     }
 
     try {
