@@ -120,6 +120,7 @@ export default function Questionnaire({ onSubmit, loading }) {
     onSubmit({
       ...data,
       age: parseInt(data.age, 10),
+      doctor_consulted: data.suggestion_source === 'Doctor',
       doses_skipped: data.doses_skipped === true,
       prior_use_6mo: data.prior_use_6mo === true,
       shared_antibiotics: data.shared_antibiotics === true,
