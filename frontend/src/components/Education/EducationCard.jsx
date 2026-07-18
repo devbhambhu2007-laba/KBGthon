@@ -1,36 +1,39 @@
-import React, { useState } from 'react';
+import React from 'react';
 
-export default function EducationCard({ card }) {
-  const [flipped, setFlipped] = useState(false);
+const ICONS = ['biotech', 'coronavirus', 'health_and_safety', 'public', 'vaccines', 'science', 'eco', 'psychology', 'warning', 'gavel', 'group', 'medication'];
+const COLORS = [
+  'text-primary', 'bg-primary/10',
+  'text-secondary', 'bg-secondary/10',
+  'text-tertiary', 'bg-tertiary/10'
+];
+
+export default function EducationCard({ card, index }) {
+  // Cycle through icons and colors to give variety
+  const icon = ICONS[index % ICONS.length];
+  const textColor = COLORS[(index % 3) * 2];
+  const bgColor = COLORS[(index % 3) * 2 + 1];
 
   return (
-    <div 
-      className="relative w-full h-64 perspective-1000 cursor-pointer animate-fade-in group"
-      onClick={() => setFlipped(!flipped)}
-    >
-      <div className={`w-full h-full relative transform-style-3d transition-transform duration-500 ease-in-out ${flipped ? 'rotate-y-180' : ''}`}>
-        
-        {/* Front */}
-        <div className="absolute inset-0 backface-hidden glass-card flex flex-col justify-center items-center p-6 text-center group-hover:border-teal-400/50 transition-colors">
-          <div className="w-16 h-16 rounded-full bg-teal-500/20 flex items-center justify-center mb-4 text-3xl">
-            💡
-          </div>
-          <h3 className="text-xl font-bold text-white">{card.concept}</h3>
-          <p className="text-sm text-teal-400 mt-2 font-medium opacity-0 group-hover:opacity-100 transition-opacity">Tap to flip ↺</p>
+    <div className="glass-panel p-xl rounded-xl relative group h-full flex flex-col hover:-translate-y-1 transition-transform duration-300">
+      <div className="flex justify-between items-start mb-lg">
+        <div className={`w-12 h-12 rounded-lg ${bgColor} flex items-center justify-center ${textColor}`}>
+          <span className="material-symbols-outlined text-headline-md">{icon}</span>
         </div>
-
-        {/* Back */}
-        <div className="absolute inset-0 backface-hidden rotate-y-180 glass-card-light p-6 flex flex-col justify-between border-t-4 border-t-cyan-500">
-          <div>
-            <h4 className="font-bold text-cyan-300 mb-2">{card.concept}</h4>
-            <p className="text-sm text-slate-200">{card.explanation}</p>
-          </div>
-          <div className="mt-4 pt-3 border-t border-white/10">
-            <p className="text-xs font-semibold text-amber-400">{card.impact}</p>
-            <p className="text-[10px] text-slate-400 mt-1 opacity-70">Source: {card.source}</p>
-          </div>
+        <span className="font-label-caps text-label-caps text-on-surface-variant bg-white/5 px-sm py-xs rounded-full border border-white/5">
+          SOURCE: {card.source}
+        </span>
+      </div>
+      
+      <h3 className="font-headline-md text-headline-md mb-md text-on-surface">{card.concept}</h3>
+      
+      <p className="text-on-surface-variant mb-xl font-body-md flex-grow">
+        {card.explanation}
+      </p>
+      
+      <div className="mt-auto pt-md border-t border-white/5 flex items-end justify-between">
+        <div>
+          <span className={`block ${textColor} font-bold text-headline-md`}>{card.impact}</span>
         </div>
-
       </div>
     </div>
   );

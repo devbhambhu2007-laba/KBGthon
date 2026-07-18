@@ -1,62 +1,139 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import Disclaimer from '../components/Disclaimer/Disclaimer';
 
 export default function Landing() {
   const navigate = useNavigate();
 
   return (
-    <div className="flex-grow flex flex-col justify-center animate-fade-in pb-12">
-      <div className="max-w-4xl mx-auto px-4 w-full pt-10">
-        
-        <div className="text-center mb-12">
-          <div className="inline-block mb-4 px-4 py-1.5 rounded-full bg-teal-500/10 border border-teal-500/20 text-teal-400 text-sm font-semibold tracking-wide">
-            One Health Initiative
+    <div className="flex flex-col w-full">
+      {/* Hero Section */}
+      <section className="w-full px-margin-mobile md:px-margin-desktop max-w-[1440px] mx-auto py-xl md:py-3xl flex flex-col md:flex-row items-center gap-2xl">
+        <div className="flex-1 flex flex-col gap-lg items-start">
+          <div className="inline-flex items-center gap-sm bg-surface-container border border-outline-variant rounded-full px-sm py-xs">
+            <span className="w-2 h-2 rounded-full bg-secondary"></span>
+            <span className="text-label-sm font-label-sm text-on-surface-variant">Clinical Decision Support v2.1</span>
           </div>
-          <h1 className="text-4xl md:text-6xl font-black mb-6 leading-tight">
-            Understanding <br/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-cyan-400">
-              Antimicrobial Resistance
-            </span>
+          <h1 className="font-display-lg text-display-lg text-primary max-w-[672px] leading-tight">
+            Understand Your Antibiotic Risk
           </h1>
-          <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto mb-10 leading-relaxed">
-            Assess your risk of antibiotic misuse, learn how your habits contribute to the global AMR crisis, and discover how to protect our future.
+          <p className="font-body-lg text-body-lg text-on-surface-variant max-w-[576px]">
+            Professional assessment tool grounded in WHO and CDC guidelines. Make evidence-based decisions to combat antimicrobial resistance effectively.
           </p>
+          <div className="flex flex-col sm:flex-row items-center gap-md pt-sm w-full sm:w-auto">
+            <button 
+              onClick={() => navigate('/assessment')}
+              className="w-full sm:w-auto inline-flex items-center justify-center bg-primary-container text-on-primary px-xl py-md rounded font-label-md text-label-md hover:bg-primary transition-colors cursor-pointer active:scale-95"
+            >
+              Start Assessment
+            </button>
+            <button 
+              onClick={() => navigate('/learn')}
+              className="w-full sm:w-auto inline-flex items-center justify-center border border-secondary text-secondary px-xl py-md rounded font-label-md text-label-md hover:bg-surface-container-low transition-colors cursor-pointer active:scale-95"
+            >
+              View Guidelines
+            </button>
+          </div>
+        </div>
+        
+        <div className="flex-1 w-full h-[400px] md:h-[500px] rounded-xl overflow-hidden border border-outline-variant shadow-sm relative">
+          <img 
+            className="w-full h-full object-cover" 
+            alt="Medical laboratory setting with digital tablet" 
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBjT8DLSF7fo-7sSDQlggCWFYjZSaJ91T3FNkNs8Kj3ERJ0KuU-63NP_HtfyKcyAy3MXTJUKazd-gAhBfNakcCnzkF1m7higzzPy1Qfway6Ge_hjNRjJTGz1hkaZ1HmQMgJOv2KuCeW2nU3eNmGr7QW5bz9VnoonlYIO9mrKvlL7oHl3mpcZ2Y4nH1cGCXmyjOvRTyXZBv1MyC7WvlludLv5kIB9cw5biZhVV_4SuV5WCoqZTMkeTUZ"
+          />
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="w-full px-margin-mobile md:px-margin-desktop max-w-[1440px] mx-auto py-2xl">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+          <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col gap-sm">
+            <div className="w-10 h-10 rounded-full bg-error-container text-on-error-container flex items-center justify-center mb-xs">
+              <span className="material-symbols-outlined" style={{fontVariationSettings: "'FILL' 1"}}>coronavirus</span>
+            </div>
+            <span className="font-display-lg text-display-lg text-primary">4.95M</span>
+            <h3 className="font-headline-sm text-headline-sm text-on-surface">Annual Deaths</h3>
+            <p className="font-body-sm text-body-sm text-on-surface-variant">Globally associated with antimicrobial resistance (AMR).</p>
+          </div>
           
-          <button 
-            onClick={() => navigate('/assessment')}
-            className="btn-primary text-lg px-8 py-4 flex items-center gap-2 mx-auto"
-          >
-            Start Assessment
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
-          </button>
-        </div>
-
-        <div className="mb-12">
-          <Disclaimer variant="inline" />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16">
-          <div className="glass-card p-6 text-center hover:border-teal-400/30 transition-colors">
-            <div className="text-3xl mb-3">🦠</div>
-            <h3 className="font-bold text-xl mb-2 text-white">700K+</h3>
-            <p className="text-sm text-slate-300">Deaths annually worldwide attributed to drug-resistant infections.</p>
+          <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col gap-sm">
+            <div className="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center mb-xs">
+              <span className="material-symbols-outlined" style={{fontVariationSettings: "'FILL' 1"}}>prescriptions</span>
+            </div>
+            <span className="font-display-lg text-display-lg text-primary">30%</span>
+            <h3 className="font-headline-sm text-headline-sm text-on-surface">Unnecessary</h3>
+            <p className="font-body-sm text-body-sm text-on-surface-variant">Outpatient antibiotic prescriptions are considered inappropriate.</p>
           </div>
-          <div className="glass-card p-6 text-center hover:border-amber-400/30 transition-colors">
-            <div className="text-3xl mb-3">💊</div>
-            <h3 className="font-bold text-xl mb-2 text-white">30%</h3>
-            <p className="text-sm text-slate-300">Of antibiotic prescriptions in outpatient settings are completely unnecessary.</p>
-          </div>
-          <div className="glass-card p-6 text-center hover:border-coral-400/30 transition-colors">
-            <div className="text-3xl mb-3">📉</div>
-            <h3 className="font-bold text-xl mb-2 text-white">$100T</h3>
-            <p className="text-sm text-slate-300">Potential economic cost by 2050 if no action is taken globally.</p>
+          
+          <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col gap-sm">
+            <div className="w-10 h-10 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center mb-xs">
+              <span className="material-symbols-outlined" style={{fontVariationSettings: "'FILL' 1"}}>science</span>
+            </div>
+            <div className="flex items-baseline gap-xs">
+              <span className="font-display-lg text-display-lg text-primary">12</span>
+              <span className="font-headline-sm text-headline-sm text-on-surface-variant">vs 60+</span>
+            </div>
+            <h3 className="font-headline-sm text-headline-sm text-on-surface">Critical Strains</h3>
+            <p className="font-body-sm text-body-sm text-on-surface-variant">Priority pathogens tracked compared to overall identified threats.</p>
           </div>
         </div>
+      </section>
 
-      </div>
+      {/* Process Section */}
+      <section className="w-full bg-surface-container-low border-t border-b border-outline-variant py-3xl">
+        <div className="px-margin-mobile md:px-margin-desktop max-w-[1440px] mx-auto flex flex-col gap-2xl">
+          <div className="text-center max-w-[672px] mx-auto">
+            <h2 className="font-headline-lg text-headline-lg text-primary mb-sm">Structured Assessment Protocol</h2>
+            <p className="font-body-md text-body-md text-on-surface-variant">
+              A streamlined, three-step methodology to evaluate risk factors and determine the appropriate clinical pathway.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-xl relative">
+            {/* Connecting Line (Desktop) */}
+            <div className="hidden md:block absolute top-12 left-[16.66%] right-[16.66%] h-px bg-outline-variant z-0"></div>
+            
+            {/* Step 1 */}
+            <div className="flex flex-col items-center text-center gap-md relative z-10">
+              <div className="w-24 h-24 rounded-full bg-surface-container-lowest border-2 border-primary flex items-center justify-center shadow-sm">
+                <span className="material-symbols-outlined text-primary text-[40px]">assignment</span>
+              </div>
+              <div className="flex flex-col gap-xs">
+                <h4 className="font-headline-md text-headline-md text-primary">Answer</h4>
+                <p className="font-body-sm text-body-sm text-on-surface-variant max-w-[320px] mx-auto">
+                  Input patient history and symptoms into our structured clinical questionnaire.
+                </p>
+              </div>
+            </div>
+            
+            {/* Step 2 */}
+            <div className="flex flex-col items-center text-center gap-md relative z-10">
+              <div className="w-24 h-24 rounded-full bg-surface-container-lowest border-2 border-outline-variant flex items-center justify-center shadow-sm">
+                <span className="material-symbols-outlined text-on-surface-variant text-[40px]">analytics</span>
+              </div>
+              <div className="flex flex-col gap-xs">
+                <h4 className="font-headline-md text-headline-md text-primary">Analyze</h4>
+                <p className="font-body-sm text-body-sm text-on-surface-variant max-w-[320px] mx-auto">
+                  Our algorithm cross-references data against current WHO/CDC guidelines.
+                </p>
+              </div>
+            </div>
+            
+            {/* Step 3 */}
+            <div className="flex flex-col items-center text-center gap-md relative z-10">
+              <div className="w-24 h-24 rounded-full bg-surface-container-lowest border-2 border-outline-variant flex items-center justify-center shadow-sm">
+                <span className="material-symbols-outlined text-on-surface-variant text-[40px]">school</span>
+              </div>
+              <div className="flex flex-col gap-xs">
+                <h4 className="font-headline-md text-headline-md text-primary">Explain</h4>
+                <p className="font-body-sm text-body-sm text-on-surface-variant max-w-[320px] mx-auto">
+                  Receive clear, actionable recommendations and patient education materials.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

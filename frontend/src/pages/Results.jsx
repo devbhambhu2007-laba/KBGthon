@@ -24,7 +24,6 @@ export default function Results() {
       const fetchExplain = async () => {
         setLoadingExplain(true);
         try {
-          // First, fetch guideline snippets for each triggered reason
           const snippetsMap = {};
           if (assessData.reasons && assessData.reasons.length > 0) {
             const guidelinePromises = assessData.reasons
@@ -46,7 +45,6 @@ export default function Results() {
             });
           }
 
-          // Now call /explain with the proper snippets
           const payload = {
             score: assessData.score,
             category: assessData.category,
@@ -72,38 +70,58 @@ export default function Results() {
 
   if (!assessData) return null;
 
+  const isHigh = assessData.category === "High";
+
   return (
-    <div className="max-w-4xl mx-auto px-4 w-full py-10 flex-grow animate-fade-in">
-      {/* Dynamic disclaimer at top — tied to risk level */}
+    <div className="flex-grow w-full max-w-[1440px] mx-auto px-margin-mobile md:px-margin-desktop py-xl md:py-3xl flex flex-col gap-lg animate-fade-in">
+      <header className="flex flex-col gap-md mb-md">
+        <div>
+          <h1 className="text-headline-lg-mobile md:text-headline-lg font-headline-lg-mobile md:font-headline-lg text-primary">Assessment Results</h1>
+          <p className="text-body-md font-body-md text-on-surface-variant mt-xs">Analysis ID: #{assessData.session_id.split('-')[0].toUpperCase()} | Generated just now</p>
+        </div>
+        
+        {isHigh && (
+          <div className="bg-error-container border border-error rounded-lg p-md flex items-start gap-md mt-sm shadow-sm">
+            <span className="material-symbols-outlined text-error mt-xs" style={{fontVariationSettings: "'FILL' 1"}}>warning</span>
+            <div>
+              <h3 className="text-headline-sm font-headline-sm text-on-error-container">High Risk Profile Identified</h3>
+              <p className="text-body-sm font-body-sm text-on-error-container mt-xs">Patient demonstrates significant behavioral and historical markers indicating elevated risk for developing or harboring antimicrobial-resistant infections. Immediate clinical review recommended prior to prescribing broad-spectrum antibiotics.</p>
+            </div>
+          </div>
+        )}
+      </header>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+        {/* Left Column: Gauge & Analysis (Wider) */}
+        <div className="lg:col-span-7 flex flex-col gap-gutter">
+          <RiskResult data={assessData} variant="gaugeOnly" />
+          <Explanation explanation={explainData} loading={!explainData && loadingExplain} />
+        </div>
+
+        {/* Right Column: Risk Factors List (Narrower) */}
+        <div className="lg:col-span-5 flex flex-col">
+          <RiskResult data={assessData} variant="factorsOnly" />
+        </div>
+      </div>
+      
+      {/* Disclaimer Banner below main grid */}
       <Disclaimer riskCategory={assessData.category} />
 
-      <RiskResult data={assessData} />
-      
-      <Explanation explanation={explainData} loading={!explainData && loadingExplain} />
-
-      {/* Dynamic disclaimer at bottom — tied to risk level */}
-      <div className="mt-8">
-        <Disclaimer riskCategory={assessData.category} />
-      </div>
-
-      <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
+      {/* Action Buttons */}
+      <div className="flex flex-col sm:flex-row justify-end items-center gap-md mt-lg border-t border-outline-variant pt-lg">
         <button 
-          onClick={() => navigate('/assessment')} 
-          className="btn-secondary flex items-center justify-center gap-2"
+          onClick={() => navigate('/assessment')}
+          className="w-full sm:w-auto px-lg py-sm rounded border border-secondary text-secondary font-label-md text-label-md hover:bg-surface-container-low transition-colors flex items-center justify-center gap-xs cursor-pointer active:scale-95"
         >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
-          Take Assessment Again
+          <span className="material-symbols-outlined" style={{fontVariationSettings: "'FILL' 0"}}>refresh</span>
+          Restart Assessment
         </button>
         <button 
-          onClick={() => navigate('/learn')} 
-          className="btn-primary flex items-center justify-center gap-2"
+          onClick={() => navigate('/learn')}
+          className="w-full sm:w-auto px-lg py-sm rounded bg-primary-container text-on-primary font-label-md text-label-md hover:bg-primary transition-colors flex items-center justify-center gap-xs cursor-pointer active:scale-95"
         >
-          Learn More About AMR
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332-.477-4.5-1.253" />
-          </svg>
+          <span className="material-symbols-outlined" style={{fontVariationSettings: "'FILL' 0"}}>school</span>
+          Learn About AMR
         </button>
       </div>
     </div>

@@ -18,20 +18,14 @@ export default function Assessment() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 w-full py-10 flex-grow">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold font-heading mb-3">Risk Assessment</h1>
-        <p className="text-slate-300">Complete this short questionnaire to evaluate your antibiotic usage habits.</p>
-      </div>
-
+    <div className="flex-grow flex flex-col items-center justify-center py-xl w-full max-w-[1440px] mx-auto px-margin-mobile md:px-margin-desktop animate-fade-in">
+      
       {error && (
-        <div className="glass-card border-l-4 border-l-coral-500 p-4 mb-6 flex items-start gap-3 text-coral-200">
-          <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
+        <div className="bg-error-container border border-error p-md mb-lg flex items-start gap-md text-on-error-container rounded w-full max-w-[672px] shadow-sm">
+          <span className="material-symbols-outlined text-error mt-xs" style={{fontVariationSettings: "'FILL' 1"}}>warning</span>
           <div>
-            <h4 className="font-bold">Submission Error</h4>
-            <p className="text-sm">{error}</p>
+            <h4 className="font-headline-sm text-headline-sm">Submission Error</h4>
+            <p className="font-body-sm text-body-sm mt-1">{error}</p>
           </div>
         </div>
       )}

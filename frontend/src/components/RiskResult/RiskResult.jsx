@@ -1,66 +1,109 @@
-import React, { useState } from 'react';
-import RiskGauge from './RiskGauge';
-import ReasonCard from './ReasonCard';
+import React from 'react';
 
-export default function RiskResult({ data }) {
-  const [showMath, setShowMath] = useState(false);
+export default function RiskResult({ data, variant = "all" }) {
   if (!data) return null;
 
-  const rawSum = data.reasons ? data.reasons.reduce((sum, r) => sum + r.weight, 0) : 0;
+  const isHigh = data.category === "High";
+  const isMedium = data.category === "Medium";
 
-  return (
-    <div className="glass-card p-6 md:p-8 animate-fade-in mb-8">
-      <h2 className="text-2xl font-bold font-heading text-center mb-8 text-white">Assessment Results</h2>
-      
-      <div className="flex justify-center mb-10">
-        <RiskGauge score={data.score} size={240} />
-      </div>
+  const colorClass = isHigh ? 'text-error' : isMedium ? 'text-secondary' : 'text-primary';
+  const bgClass = isHigh ? 'bg-error-container text-on-error-container' : isMedium ? 'bg-secondary-container text-on-secondary-container' : 'bg-tertiary-container text-on-tertiary-container';
+  const strokeColor = isHigh ? 'text-error' : isMedium ? 'text-secondary' : 'text-primary';
+  
+  // Normalized score 0-100 for gauge
+  const displayScore = Math.round((data.score / 10) * 100);
+  const strokeDashoffset = 251.2 - (displayScore / 100) * 251.2;
 
-      <div className="text-center mb-6">
-        <button
-          onClick={() => setShowMath(!showMath)}
-          className="text-sm font-medium text-teal-400 hover:text-teal-300 transition-colors inline-flex items-center gap-1.5 focus:outline-none"
-        >
-          <svg className={`w-4 h-4 transition-transform duration-200 ${showMath ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+  const getSeverityText = () => {
+    if (isHigh) return "Critical";
+    if (isMedium) return "Moderate";
+    return "Low";
+  };
+
+  const renderGauge = () => (
+    <section className="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg shadow-sm h-full flex flex-col justify-center">
+      <h2 className="text-headline-sm font-headline-sm text-primary border-b border-outline-variant pb-sm mb-md flex items-center gap-xs">
+        <span className="material-symbols-outlined" style={{fontVariationSettings: "'FILL' 0"}}>speed</span>
+        Composite Risk Index
+      </h2>
+      <div className="flex flex-col md:flex-row items-center gap-xl justify-center py-md">
+        <div className="relative w-48 h-48 flex items-center justify-center">
+          <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+            <circle className="text-surface-variant" cx="50" cy="50" fill="transparent" r="40" stroke="currentColor" strokeWidth="12"></circle>
+            <circle 
+              className={`${strokeColor} transition-all duration-1000 ease-out`}
+              cx="50" 
+              cy="50" 
+              fill="transparent" 
+              r="40" 
+              stroke="currentColor" 
+              strokeDasharray="251.2" 
+              strokeDashoffset={strokeDashoffset} 
+              strokeWidth="12"
+              strokeLinecap="round"
+            ></circle>
           </svg>
-          {showMath ? "Hide Score Calculation Details" : "How is this score calculated?"}
-        </button>
-        
-        {showMath && (
-          <div className="mt-4 p-4 rounded-lg bg-slate-800/40 border border-slate-700/50 text-left text-sm text-slate-300 animate-slide-up max-w-lg mx-auto">
-            <h4 className="font-semibold text-white mb-2">Deterministic Scoring Engine Math:</h4>
-            <p className="mb-2">
-              Your score is calculated based on WHO/CDC risk weightings.
-              Your score is based on 7 risk rules derived from WHO/CDC/ICMR guidelines.
-              The maximum possible raw risk sum is <strong>17 points</strong>.
-            </p>
-            <div className="bg-slate-900/60 p-2.5 rounded border border-slate-800 font-mono text-xs text-teal-300 mb-3">
-              Triggered Raw Sum = {rawSum} / 17 max points <br />
-              Formula: ({rawSum} / 17) × 10 = {data.score}
-            </div>
-            <p className="text-xs text-slate-400">
-              *Note: Having symptoms does not directly add points. Symptoms are only checked to determine if you used antibiotics for a likely viral infection.
-            </p>
-          </div>
-        )}
-      </div>
-
-      {data.reasons && data.reasons.length > 0 && (
-        <div className="mt-8">
-          <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center gap-2">
-            <svg className="w-5 h-5 text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
-            Risk Factors Identified
-          </h3>
-          <div className="space-y-1">
-            {data.reasons.map((reason, idx) => (
-              <ReasonCard key={idx} reason={reason} />
-            ))}
+          <div className="absolute flex flex-col items-center justify-center">
+            <span className={`text-display-lg font-display-lg ${colorClass}`}>{displayScore}</span>
+            <span className="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Out of 100</span>
           </div>
         </div>
-      )}
-    </div>
+        <div className="flex flex-col gap-sm max-w-[320px]">
+          <h4 className={`text-label-md font-label-md ${colorClass}`}>Severity: {getSeverityText()}</h4>
+          <p className="text-body-sm font-body-sm text-on-surface-variant">
+            The index score is derived from algorithmic weighting of key clinical variables based on WHO/CDC guidelines. Scores above 70 warrant intervention protocols.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+
+  const renderFactors = () => (
+    <section className="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg shadow-sm h-full">
+      <div className="flex justify-between items-end border-b border-outline-variant pb-sm mb-md">
+        <h2 className="text-headline-sm font-headline-sm text-primary">Identified Vectors</h2>
+        <span className="text-label-sm font-label-sm text-on-surface-variant">Weighted Impact</span>
+      </div>
+      <ul className="flex flex-col">
+        {data.reasons.length === 0 ? (
+          <li className="py-md text-body-sm text-on-surface-variant text-center">No significant risk vectors identified.</li>
+        ) : (
+          data.reasons.map((reason, idx) => {
+            const isHighWeight = reason.weight >= 3;
+            const iconColor = isHighWeight ? "text-error" : "text-secondary";
+            const badgeBg = isHighWeight ? "bg-error-container text-on-error-container" : "bg-secondary-container text-on-secondary-container";
+            
+            return (
+              <li key={idx} className="flex justify-between items-center py-md border-b border-surface-container-high last:border-0 hover:bg-surface transition-colors rounded px-xs">
+                <div className="flex items-center gap-sm">
+                  <span className={`material-symbols-outlined ${iconColor}`} style={{fontVariationSettings: "'FILL' 0"}}>
+                    {reason.rule_id === 'RULE-01' ? 'medical_services' : reason.rule_id === 'RULE-03' ? 'medication' : reason.rule_id === 'RULE-02' ? 'history' : 'warning'}
+                  </span>
+                  <div>
+                    <h4 className="text-label-md font-label-md text-primary">{reason.description}</h4>
+                    <p className="text-label-sm font-label-sm text-on-surface-variant">Ref: {reason.guideline_ref}</p>
+                  </div>
+                </div>
+                <span className={`${badgeBg} px-2 py-1 rounded text-label-sm font-label-sm font-bold ml-2 shrink-0`}>
+                  +{reason.weight * 10} pts
+                </span>
+              </li>
+            );
+          })
+        )}
+      </ul>
+    </section>
+  );
+
+  if (variant === "gaugeOnly") return renderGauge();
+  if (variant === "factorsOnly") return renderFactors();
+  
+  return (
+    <>
+      {renderGauge()}
+      <div className="mt-xl">
+        {renderFactors()}
+      </div>
+    </>
   );
 }
